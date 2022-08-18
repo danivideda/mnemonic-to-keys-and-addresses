@@ -11,6 +11,7 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     - [Check if installed correctly](#check-if-installed-correctly)
   - [📝 Generate Mnemonic or Seed Phrase](#-generate-mnemonic-or-seed-phrase)
   - [🔑 Create and Derive Keys – *private, public, signing, and verify keys*](#-create-and-derive-keys--private-public-signing-and-verify-keys)
+    - [Account Keys](#account-keys)
   - [🏠 Create Account Addresses – *testnet and mainnet*](#-create-account-addresses--testnet-and-mainnet)
 
 ## ✅ Prerequisites
@@ -55,7 +56,20 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
 3. **Note**: *for Mac users, if you encounter any Security issues, open **Apple > System Preferences > Security & Privacy**, and click 'Allow' when prompted*
 
 ## 📝 Generate Mnemonic or Seed Phrase
+1. Generate 24 seed phrase using `$ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt`. This is done locally and doesn't require internet connection
+    <img src="img/generate-seed.png" style="width:80%;">
+2. Convert into Master Root Key using `$ cardano-wallet key from-recovery-phrase Shelley < mnemonic.txt | tee keys/root.xprv`
+    <img src="img/root.png" style="width:80%;">
 
 ## 🔑 Create and Derive Keys – *private, public, signing, and verify keys*
+
+Cardano uses [Hierarchical Deterministic Wallet](https://input-output-hk.github.io/cardano-wallet/concepts/hierarchical-deterministic-wallets)
+
+### Account Keys
+One seed phrase can generates many accounts and use them seperately.
+
+<img src="img/accounts-eternl.png" style="width:80%;">
+
+When using Eternl wallet, you can see the HD Wallets deriviation path on each account; `(m/1852'/1815'/0'), (m/1852'/1815'/1'), and (m/1852'/1815'/2')`
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
