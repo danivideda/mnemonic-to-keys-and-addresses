@@ -56,9 +56,17 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
 3. **Note**: *for Mac users, if you encounter any Security issues, open **Apple > System Preferences > Security & Privacy**, and click 'Allow' when prompted*
 
 ## 📝 Generate Mnemonic or Seed Phrase
-1. Generate 24 seed phrase using `$ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt`. This is done locally and doesn't require internet connection
+1. Generate 24 seed phrase using. This is done locally and doesn't require internet connection
+    ```bash
+    $ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt
+    ```
+
     <img src="img/generate-seed.png" style="width:80%;">
-2. Convert into Master Root Key using `$ cardano-wallet key from-recovery-phrase Shelley < mnemonic.txt | tee keys/root.xprv`
+
+2. Convert the seed phrase into Master Root Key 
+    ```bash
+    $ cardano-wallet key from-recovery-phrase Shelley < mnemonic.txt | tee keys/root.xprv
+    ```
     <img src="img/root.png" style="width:80%;">
 
 ## 🔑 Create and Derive Keys – *private, public, signing, and verify keys*
@@ -71,5 +79,7 @@ One seed phrase can generates many accounts and use them seperately.
 <img src="img/accounts-eternl.png" style="width:80%;">
 
 When using Eternl wallet, you can see the HD Wallets deriviation path on each account; `(m/1852'/1815'/0'), (m/1852'/1815'/1'), and (m/1852'/1815'/2')`
+
+1. Derive from Master Root Key into Account #0
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
