@@ -16,6 +16,7 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     - [Shelley Format Keys](#shelley-format-keys)
     - [Done!](#done)
   - [🏠 Create Account Addresses – *testnet and mainnet*](#-create-account-addresses--testnet-and-mainnet)
+    - [TBD](#tbd)
 
 ## ✅ Prerequisites
 
@@ -39,7 +40,7 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     export PATH="$HOME/.local/bin-cardano/node-1.35.0:$PATH"
     export PATH="$HOME/.local/bin-cardano/wallet-v2022-07-01:$PATH"
     ```
-3. **Note**: *there's some reduncancy with some files, such as `cardano-node` and `cardano-cli` exist in both directories. The order of `PATH` declaration will determine which file will be used. In this case, it will use the `cardano-wallet` directory.*
+    > **Note**: *there's some reduncancy with some files, such as `cardano-node` and `cardano-cli` exist in both directories. The order of `PATH` declaration will determine which file will be used. In this case, it will use the `cardano-wallet` directory.*
 
 ### Check if installed correctly
 1. Open new terminal session
@@ -56,14 +57,14 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     $ cardano-wallet version
     # v2022-07-01 (git revision: c0ece6ad1868682b074708ffb810bdc2ea96934f)
     ```
-3. **Note**: *for Mac users, if you encounter any Security issues, open **Apple > System Preferences > Security & Privacy**, and click 'Allow' when prompted*
+   > **Note**: *for Mac users, if you encounter any Security issues, open **Apple > System Preferences > Security & Privacy**, and click 'Allow' when prompted*
 
 ## 📝 Generate Mnemonic or Seed Phrase
 1. Generate 24 seed phrase using. This is done locally and doesn't require internet connection
     ```bash
     $ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt
     ```
-    > Note: `tee` command means ***write the output into this file, while also echo the output into the terminal***
+    > **Note**: `tee` command means ***write the output into this file, while also echo the output into the terminal***
 
     <img src="img/generate-seed.png" style="width:80%;">
 
@@ -112,7 +113,7 @@ When using Eternl wallet, you can see the HD Wallets deriviation path on each ac
    $ cardano-wallet key public --with-chain-code < keys/account0.xprv | tee keys/account0.xpub
    ```
    <img src="img/account-key.png" style="width:80%;">
-3. Repeat for different accounts
+3. Repeat the step if you want to create additional accounts, e.g `1852H/1815H/1H`, `1852H/1815H/2H`, and so on
   
 ### Payment and Stake Keys
 Every account have **their own set of addresses**. An address is nothing more than a **hashed public keys**. In *Shelley Era*, an address consist of 2 different public key, a **payment key** and a **stake key**. As specified in [CIP-1852](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852), we will derive those 2 keys from the `ExtendedPrivateKey` of **Account#0**
@@ -145,7 +146,7 @@ Every account have **their own set of addresses**. An address is nothing more th
 
    <img src="img/stake-key.png" style="width:80%;">
 
-> Note: we've only created the `ExtendedPrivateKey` for both payment and stake key, and not `ExtendedPublicKey` that we've done previously. This is because we will convert the payment and stake key private keys into Shelley compatible format first, and then we can create the public key in Shelley format. Shelley format is needed to create addresses, build transaction, and submit transaction using `cardano-cli`.
+> **Note**: we've only created the `ExtendedPrivateKey` for both payment and stake key, and not `ExtendedPublicKey` that we've done previously. This is because we will convert the payment and stake key private keys into Shelley compatible format first, and then we can create the public key in Shelley format. Shelley format is needed to create addresses, build transaction, and submit transaction using `cardano-cli`.
 
 ### Shelley Format Keys
 So far, we've created private keys for **MasterKey**, **Account#0**, payment, and stake keys.
@@ -164,7 +165,7 @@ stake_xsk10prhunyw2paf32pq60le6f2setqhgjqxpxxch90dv42057hltdgmk0wkpdpjkkw5puf935
 ```
 
 Before we can create addresses, signing transaction, or doing anything with `cardano-cli`, we need to convert these keys into a **Shelley compatible format**.
-> Note before continuing: `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
+> **Note before continuing**: `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
 1. Convert `payment0_idx0.xprv` into `payment0_idx0.xskey` 
    ```bash
    $ cardano-cli key convert-cardano-address-key \
@@ -206,6 +207,7 @@ After we convert the `ExtendedPrivateKey` into `ExtendedSigningKey`, we can then
    <img src="img/shelley-payment-verif-key.png" style="width:80%;">
 
 ### Done!
-We completed the steps for deriving private keys
+We have completed the steps on deriving keys necessary for later uses, such as creating addresses and signing transactions.
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
+### TBD
