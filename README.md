@@ -165,7 +165,7 @@ stake_xsk10prhunyw2paf32pq60le6f2setqhgjqxpxxch90dv42057hltdgmk0wkpdpjkkw5puf935
 ```
 
 Before we can create addresses, signing transaction, or doing anything with `cardano-cli`, we need to convert these keys into a **Shelley compatible format**.
-> **Note before continuing**: `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
+> **Note**: for the next section, `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
 1. Convert `payment0_idx0.xprv` into `payment0_idx0.xskey` 
    ```bash
    $ cardano-cli key convert-cardano-address-key \
