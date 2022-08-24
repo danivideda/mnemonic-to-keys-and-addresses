@@ -12,6 +12,9 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
   - [📝 Generate Mnemonic or Seed Phrase](#-generate-mnemonic-or-seed-phrase)
   - [🔑 Create and Derive Keys – *private, public, signing, and verify keys*](#-create-and-derive-keys--private-public-signing-and-verify-keys)
     - [Account Keys](#account-keys)
+    - [Payment and Stake Keys](#payment-and-stake-keys)
+    - [Shelley Format Keys](#shelley-format-keys)
+    - [Done!](#done)
   - [🏠 Create Account Addresses – *testnet and mainnet*](#-create-account-addresses--testnet-and-mainnet)
 
 ## ✅ Prerequisites
@@ -60,6 +63,7 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     ```bash
     $ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt
     ```
+    > Note: `tee` command means ***write the output into this file, while also echo the output into the terminal***
 
     <img src="img/generate-seed.png" style="width:80%;">
 
@@ -71,7 +75,7 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
 
 ## 🔑 Create and Derive Keys – *private, public, signing, and verify keys*
 
-Cardano uses [Hierarchical Deterministic Wallet](https://input-output-hk.github.io/cardano-wallet/concepts/hierarchical-deterministic-wallets), and further standardized in [CIP-1852](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852)
+Cardano uses [Hierarchical Deterministic Wallet](https://input-output-hk.github.io/cardano-wallet/concepts/hierarchical-deterministic-wallets), and further standardized in [CIP-1852](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852). Cardano adapt the BIP32 standard in Bitcoin, but it's modified to accomodate Ed25519
 
 For Cardano, the derivation path would be: 
 ```
@@ -99,15 +103,109 @@ When using Eternl wallet, you can see the HD Wallets deriviation path on each ac
 
 **Steps to create these accounts:**
 
-1. Derive a key from the **RootMasterKey** `root.xprv` to create an **ExtendedPrivateKey** for Account #0
+1. Derive a key from the **MasterKey** (`root.xprv`) to create an `ExtendedPrivateKey` for **Account#0**
    ```bash
    $ cardano-wallet key child 1852H/1815H/0H < keys/root.xprv | tee keys/account0.xprv
    ```
-2. Create the **ExtendedPublicKey** using the Account #0 **ExtendedPrivateKey**
+2. Create the `ExtendedPublicKey` using the **Account#0** `ExtendedPrivateKey`
    ```bash
-   $ cardano-wallet key public --with-chain-code < keys/account0.xprv | tee account0.xpub
+   $ cardano-wallet key public --with-chain-code < keys/account0.xprv | tee keys/account0.xpub
    ```
-   <img src="img/account-keys.png" style="width:80%;">
+   <img src="img/account-key.png" style="width:80%;">
 3. Repeat for different accounts
+  
+### Payment and Stake Keys
+Every account have **their own set of addresses**. An address is nothing more than a **hashed public keys**. In *Shelley Era*, an address consist of 2 different public key, a **payment key** and a **stake key**. As specified in [CIP-1852](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852), we will derive those 2 keys from the `ExtendedPrivateKey` of **Account#0**
+
+***Payment key***
+1. The full derivation path from the **MasterKey** would be 
+  ```
+  m / 1852' / 1815' / 0' / 0 / 0
+  ```
+2. The last two number defines `role` and `index`, as already explained previously
+3. Since we've already derived **Account#0**, we just need derive it further with `0/0`
+   ```bash
+   $ cardano-wallet key child 0/0 < keys/root.xprv | tee keys/account0_idx0.xprv
+   ```
+
+   <img src="img/payment-key.png" style="width:80%;">
+4. If you want to create another payment key, repeat the process with increment for the last value, like so `0/1`, `0/2`, `0/3`, and so on.
+
+***Stake key***
+1. The full derivation path from the **MasterKey** would be 
+  ```
+  m / 1852' / 1815' / 0' / 2 / 0
+  ```
+2. The last two number defines `role` and `index`, as already explained previously
+3. Note that **there's only 1** stake key for each account, so the `index` will always be `0`
+4. Derive the key like we did in payment key
+   ```bash
+   $ cardano-wallet key child 2/0 < keys/account0.xprv | tee keys/stake0.xprv
+   ```
+
+   <img src="img/stake-key.png" style="width:80%;">
+
+> Note: we've only created the `ExtendedPrivateKey` for both payment and stake key, and not `ExtendedPublicKey` that we've done previously. This is because we will convert the payment and stake key private keys into Shelley compatible format first, and then we can create the public key in Shelley format. Shelley format is needed to create addresses, build transaction, and submit transaction using `cardano-cli`.
+
+### Shelley Format Keys
+So far, we've created private keys for **MasterKey**, **Account#0**, payment, and stake keys.
+```bash
+# Master
+root_xsk1wzh4vuzxn9s9hyq4v2jguxtmgry8ysfqnypmyup0wll3jh8ltdgm7pjfxxm8x6flan8zzewhqm57p6hzkc5uh65ky59ldl68ag38kt6l8mcdx2xn504v3h9w3ern0re6s8d5tkz7628077v8y8zv08ekps9nmhm5
+
+# Account#0
+acct_xsk1wzgkw0r9wsm70d2k9ddc340yak0l66523ngfmfe2qufscmlltdg48dvruejkc67gvr5rtfdvg54v758j52a69465n5m6u579ysu3pgm4tjjdta3g0y97pljj26qez4cxjn67wzc53stvpw372z6wpmn2y55a9l7d
+
+# Payment
+addr_xsk1cz5cuxguhmrgmrq0s7s8eghedmsw59l0uffqyemvngl66ahltdg74r2p6peg0u2dw93pwqlm2mjdhwduyn6k55yq6rv2cazfc92ltlkm8xpdkuaskdmd2ea6yl0admputnl3h5k7estgh3ps7ldhy5uqjcn5lrsa
+
+# Stake
+stake_xsk10prhunyw2paf32pq60le6f2setqhgjqxpxxch90dv42057hltdgmk0wkpdpjkkw5puf9358xj8ppk4qrdar0q4ahsecpmsnvjlywknx5r8hs2pcdhjudyx3hpvd3skx93akn6m3j0xpp6f5w72whqv8qaueg6v7s
+```
+
+Before we can create addresses, signing transaction, or doing anything with `cardano-cli`, we need to convert these keys into a **Shelley compatible format**.
+> Note before continuing: `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
+1. Convert `payment0_idx0.xprv` into `payment0_idx0.xskey` 
+   ```bash
+   $ cardano-cli key convert-cardano-address-key \
+   --shelley-payment-key \
+   --signing-key-file keys/payment0_idx0.xprv \
+   --out-file keys/payment0_idx0.xskey
+   ```
+   This will create `ExtendedSigningKey` for the payment key in Shelley format
+
+   <img src="img/shelley-payment-key.png" style="width:80%;">
+2. Convert `stake0.xprv` into `stake0.xskey`
+   ```bash
+   $ cardano-cli key convert-cardano-address-key \
+   --shelley-stake-key \
+   --signing-key-file keys/stake0.xprv \
+   --out-file keys/stake0.xskey
+   ```
+   This will create `ExtendedSigningKey` for the stake key in Shelley format
+
+   <img src="img/shelley-stake-key.png" style="width:80%;">
+
+After we convert the `ExtendedPrivateKey` into `ExtendedSigningKey`, we can then create the `ExtendedPublicKey` into a Shelley format `ExtendedVerifyKey`
+
+3. Generate the verify key from `payment0_idx0.xskey`
+   ```bash
+   $ cardano-cli key verification-key \
+   --signing-key-file keys/payment0_idx0.xskey \
+   --verification-key-file keys/payment0_idx0.xvkey
+   ```
+
+   <img src="img/shelley-payment-verif-key.png" style="width:80%;">
+4. Generate the verify key from `stake0.xskey`
+   ```bash
+   $ cardano-cli key verification-key \
+   --signing-key-file keys/stake0.xskey \
+   --verification-key-file keys/stake0.xvkey
+   ```
+
+   <img src="img/shelley-payment-verif-key.png" style="width:80%;">
+
+### Done!
+We completed the steps for deriving private keys
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
