@@ -14,11 +14,9 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     - [Account Keys](#account-keys)
     - [Payment and Stake Keys](#payment-and-stake-keys)
     - [Shelley Format Keys](#shelley-format-keys)
-    - [Done!](#done)
   - [🏠 Create Account Addresses – *testnet and mainnet*](#-create-account-addresses--testnet-and-mainnet)
     - [Build Addresses - Testnet (Preprod)](#build-addresses---testnet-preprod)
     - [Build Addresses - Mainnet](#build-addresses---mainnet)
-  - [Done!](#done-1)
 
 ## ✅ Prerequisites
 
@@ -218,7 +216,7 @@ After we convert the `ExtendedPrivateKey` into `ExtendedSigningKey`, we can then
 
    <img src="img/shelley-payment-verif-key.png" style="width:80%;">
 
-### Done!
+**Done!**
 We have completed the steps on deriving keys necessary for later uses, such as creating addresses and signing transactions.
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
@@ -270,5 +268,5 @@ Basically the same with the previous Testnet address, just replace the `--testne
    <img src="img/address-mainnet.png" style="width:80%;">
 2. The prefix for mainnet is `addr`
 
-## Done!
+**Done!**
 Congratulations, you've created your own Cardano address from scratch using `cardano-wallet` and `cardano-cli`
