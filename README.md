@@ -16,7 +16,9 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     - [Shelley Format Keys](#shelley-format-keys)
     - [Done!](#done)
   - [🏠 Create Account Addresses – *testnet and mainnet*](#-create-account-addresses--testnet-and-mainnet)
-    - [TBD](#tbd)
+    - [Build Addresses - Testnet (Preprod)](#build-addresses---testnet-preprod)
+    - [Build Addresses - Mainnet](#build-addresses---mainnet)
+  - [Done!](#done-1)
 
 ## ✅ Prerequisites
 
@@ -59,6 +61,8 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
    > **Note**: *for Mac users, if you encounter any Security issues, open **Apple > System Preferences > Security & Privacy**, and click 'Allow' when prompted*
 
 ## 📝 Generate Mnemonic or Seed Phrase
+To put it simply, **mnemonic or seed phrase is a random number used for your private key represented in a human readable words.** These words are specified in the BIP39 wordlist
+
 1. Generate 24 seed phrase using. This is done locally and doesn't require internet connection
     ```bash
     $ cardano-wallet recovery-phrase generate --size 24 | tee mnemonic.txt
@@ -164,7 +168,16 @@ stake_xsk10prhunyw2paf32pq60le6f2setqhgjqxpxxch90dv42057hltdgmk0wkpdpjkkw5puf935
 ```
 
 Before we can create addresses, signing transaction, or doing anything with `cardano-cli`, we need to convert these keys into a **Shelley compatible format**.
-> **Note**: for the next section, `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use them seperately just to differentiate between the **Shelley format** and the **regular format**. 
+> **Note**: for the next section, `ExtendedPrivateKey` and `ExtendedSigningKey` are actually the same thing in terms of underlying principle, same goes with `ExtendedPublicKey` and `ExtendedVerifyKey`. I use the name seperately just to differentiate between the **Shelley format** and the **regular or bech32 format**. 
+
+For this section, we will do the following:
+1. Convert Payment Key into Shelley format
+2. Convert Stake Key into Shelley format
+3. Create a public key for Payment Key using the Payment Key that has been converted into Shelley format
+4. Create a public key for Stake Key using the Stake Key that has been converted into Shelley format
+
+**Step:**
+
 1. Convert `payment0_idx0.xprv` into `payment0_idx0.xskey` 
    ```bash
    $ cardano-cli key convert-cardano-address-key \
@@ -172,7 +185,7 @@ Before we can create addresses, signing transaction, or doing anything with `car
    --signing-key-file keys/payment0_idx0.xprv \
    --out-file keys/payment0_idx0.xskey
    ```
-   This will create `ExtendedSigningKey` for the payment key in Shelley format
+   This will create `ExtendedSigningKey`, which is a payment key in **Shelley format**
 
    <img src="img/shelley-payment-key.png" style="width:80%;">
 2. Convert `stake0.xprv` into `stake0.xskey`
@@ -209,4 +222,53 @@ After we convert the `ExtendedPrivateKey` into `ExtendedSigningKey`, we can then
 We have completed the steps on deriving keys necessary for later uses, such as creating addresses and signing transactions.
 
 ## 🏠 Create Account Addresses – *testnet and mainnet*
-### TBD
+Before we continue, we need to convert the `ExtendedVerifyKey` into a shortened key version `VerifyKey`
+1. Shorten the `payment0_idx0.xskey` into `payment0_idx0.vkey`
+   ```bash
+   $ cardano-cli key non-extended-key \
+   --extended-verification-key-file keys/payment0_idx0.xvkey \
+   --verification-key-file keys/payment0_idx0.vkey
+   ```
+
+   <img src="img/shelley-payment-normal-verif-key.png" style="width:80%;">
+2. Shorten the `stake0.xskey` into `stake0.vkey`
+   ```bash
+   $ cardano-cli key non-extended-key \
+   --extended-verification-key-file keys/stake0.xvkey \
+   --verification-key-file keys/stake0.vkey
+   ```
+
+   <img src="img/shelley-stake-normal-verif-key.png" style="width:80%;">
+
+Now we can create the addresses using both `VerifyKey` for the Payment and Stake key
+
+### Build Addresses - Testnet (Preprod)
+It's fairly simple and easy to build addresses when we have those two `VerifyKey` prepared. As of now, there are 3 testnet: Legacy, Preview, and Preprod. The legacy testnet will be deprecated, and now we will use the Preprod. We use this because [Cardanoscan Testnet](testnet.cardanoscan.io) is using the Preprod version of testnet. From this [Getting Started Testnet](https://docs.cardano.org/cardano-testnet/getting-started) doc, we will use `INTEGER: 2` for the testnet magic number.
+
+1. Build the address
+   ```bash
+   cardano-cli address build \
+   --payment-verification-key-file keys/payment0_idx0.vkey \
+   --stake-verification-key-file keys/stake0.vkey \
+   --testnet-magic 2 \
+   --out-file addresses/account0_idx0.addr
+   ```
+   <img src="img/address-testnet-preprod.png" style="width:80%;">
+2. The prefix for testnet is `addr_test`.
+
+### Build Addresses - Mainnet
+Basically the same with the previous Testnet address, just replace the `--testnet-magic` with `--mainnet`
+
+1. Build the address
+   ```bash
+   cardano-cli address build \
+   --payment-verification-key-file keys/payment0_idx0.vkey \
+   --stake-verification-key-file keys/stake0.vkey \
+   --testnet-magic 2 \
+   --out-file addresses/account0_idx0.addr
+   ```
+   <img src="img/address-mainnet.png" style="width:80%;">
+2. The prefix for mainnet is `addr`
+
+## Done!
+Congratulations, you've created your own Cardano address from scratch using `cardano-wallet` and `cardano-cli`
