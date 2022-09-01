@@ -37,10 +37,10 @@ A step-by-step guide on **how mnemonic works** (specifically on **Cardano** usin
     ```bash
     ...
     # Path for cardano-node, cardano-cli, and cardano-wallet
-    export PATH="$HOME/.local/bin-cardano/node-1.35.0:$PATH"
     export PATH="$HOME/.local/bin-cardano/wallet-v2022-07-01:$PATH"
+    export PATH="$HOME/.local/bin-cardano/node-1.35.0:$PATH"
     ```
-    > **Note**: *there's some reduncancy with some files, such as `cardano-node` and `cardano-cli` exist in both directories. The order of `PATH` declaration will determine which file will be used. In this case, it will use the `cardano-wallet` directory.*
+    > **Note**: *there's some reduncancy with some files, such as `cardano-node` and `cardano-cli` exist in both directories. The order of `PATH` declaration will determine which file will be used. In this case, the environment will use the `cardano-node` directory for redundant files.*
 
 ### Check if installed correctly
 1. Open new terminal session
